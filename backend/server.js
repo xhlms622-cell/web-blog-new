@@ -64,9 +64,8 @@ async function startServer() {
 
     await seedDefaults();
 
-    server.listen(PORT, () => {
+    server.listen(PORT, '0.0.0.0', () => {
       console.log(`服务器运行在端口 ${PORT}`);
-      console.log(`访问地址: http://localhost:${PORT}`);
     });
   } catch (error) {
     console.error('启动服务器失败:', error);
