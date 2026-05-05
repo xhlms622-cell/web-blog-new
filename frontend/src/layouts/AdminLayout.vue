@@ -31,6 +31,10 @@
           <el-icon><Warning /></el-icon>
           <span>举报管理</span>
         </el-menu-item>
+        <el-menu-item index="/admin/categories">
+          <el-icon><Folder /></el-icon>
+          <span>分类管理</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
 
@@ -52,7 +56,7 @@
 
 <script setup>
 import { useAuthStore } from '@/stores/auth'
-import { DataAnalysis, User, Menu, Document, Warning } from '@element-plus/icons-vue'
+import { DataAnalysis, User, Menu, Document, Warning, Folder } from '@element-plus/icons-vue'
 
 const authStore = useAuthStore()
 </script>

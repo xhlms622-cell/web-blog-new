@@ -11,6 +11,9 @@
       <el-tab-pane label="最新" name="new">
         <PostList :posts="posts" :loading="loading" />
       </el-tab-pane>
+      <el-tab-pane label="热门" name="hot">
+        <PostList :posts="posts" :loading="loading" />
+      </el-tab-pane>
       <el-tab-pane label="精华" name="essence">
         <PostList :posts="posts" :loading="loading" />
       </el-tab-pane>

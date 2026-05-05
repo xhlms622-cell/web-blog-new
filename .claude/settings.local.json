@@ -1,7 +1,22 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(curl *)",
+      "Bash(npx pm2 *)",
+      "Bash(node app.js)",
+      "Bash(curl -s http://localhost:3000/api/health)",
+      "Bash(netstat -ano)",
+      "Bash(node -e \"require\\('./app'\\); console.log\\('app loaded'\\)\")",
+      "Bash(echo \"PID: $!\")",
+      "Read(//tmp/**)",
+      "Bash(tasklist)",
+      "Bash(timeout 8 node server.js)",
+      "Bash(taskkill //F //PID 20136)",
+      "Bash(findstr :3000)",
+      "Bash(taskkill *)",
+      "Bash(npm run *)",
+      "Bash(findstr \":3000.*LISTEN\")"
     ]
   }
 }

@@ -40,6 +40,13 @@
           >
             发帖
           </el-button>
+          <el-button
+            v-if="isOwnerOrAdmin"
+            type="warning"
+            @click="$router.push(`/tieba/${tiebaStore.currentTieba.id}/manage`)"
+          >
+            管理
+          </el-button>
         </div>
       </div>
 
@@ -62,7 +69,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useTiebaStore } from '@/stores/tieba'
@@ -76,6 +83,12 @@ const authStore = useAuthStore()
 const loading = ref(true)
 const postsLoading = ref(false)
 const postPage = ref(1)
+
+const isOwnerOrAdmin = computed(() => {
+  const tieba = tiebaStore.currentTieba
+  if (!tieba || !authStore.isLoggedIn) return false
+  return authStore.user?.role === 'admin' || tieba.owner_id === authStore.user?.id
+})
 
 const loadPosts = async () => {
   postsLoading.value = true

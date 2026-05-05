@@ -2,6 +2,7 @@ const { User, PointLog } = require('../models');
 const { hashPassword, comparePassword } = require('../utils/password');
 const { generateToken, generateRefreshToken } = require('../utils/token');
 const ApiResponse = require('../utils/response');
+const { awardExperience } = require('../utils/level');
 
 const register = async (req, res, next) => {
   try {
@@ -63,6 +64,9 @@ const login = async (req, res, next) => {
 
     const token = generateToken({ id: user.id, email: user.email, role: user.role });
     const refreshToken = generateRefreshToken({ id: user.id });
+
+    // 每日登录经验（异步，不阻塞响应）
+    awardExperience(user.id, 'daily_login', { description: '每日登录' });
 
     res.json(ApiResponse.success({
       user: {

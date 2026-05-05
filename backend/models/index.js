@@ -72,6 +72,7 @@ Comment.hasMany(Reply, { foreignKey: 'comment_id', as: 'replies' });
 // 回复关联
 Reply.belongsTo(Comment, { foreignKey: 'comment_id', as: 'comment' });
 Reply.belongsTo(User, { foreignKey: 'user_id', as: 'author' });
+Reply.belongsTo(User, { foreignKey: 'reply_to_user_id', as: 'replyToUser' });
 
 // 点赞关联
 User.belongsToMany(Post, {
@@ -98,6 +99,14 @@ ChatMessage.belongsTo(User, { foreignKey: 'sender_id', as: 'sender' });
 
 // 举报关联
 Report.belongsTo(User, { foreignKey: 'reporter_id', as: 'reporter' });
+Report.belongsTo(Post, { foreignKey: 'target_id', as: 'reportedPost', constraints: false });
+
+// 贴吧关注关联（用于吧主管理获取成员列表）
+TiebaFollow.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
+// 用户关注关联（用于获取粉丝/关注列表）
+UserFollow.belongsTo(User, { foreignKey: 'follower_id', as: 'follower' });
+UserFollow.belongsTo(User, { foreignKey: 'following_id', as: 'following' });
 
 // 积分关联
 PointLog.belongsTo(User, { foreignKey: 'user_id', as: 'user' });

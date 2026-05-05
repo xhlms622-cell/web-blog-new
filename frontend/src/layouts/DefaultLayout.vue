@@ -20,13 +20,13 @@
 
         <div class="header-right">
           <template v-if="authStore.isLoggedIn">
-            <el-badge :value="unreadCount" :hidden="!unreadCount" class="nav-badge">
+            <el-badge :value="notificationStore.unreadCount" :hidden="!notificationStore.unreadCount" class="nav-badge">
               <el-icon class="nav-icon" @click="$router.push('/notifications')">
                 <Bell />
               </el-icon>
             </el-badge>
 
-            <el-badge :value="messageCount" :hidden="!messageCount" class="nav-badge">
+            <el-badge :value="chatStore.totalUnread" :hidden="!chatStore.totalUnread" class="nav-badge">
               <el-icon class="nav-icon" @click="$router.push('/chat')">
                 <ChatDotRound />
               </el-icon>
@@ -52,6 +52,9 @@
                   </el-dropdown-item>
                   <el-dropdown-item @click="$router.push('/settings')">
                     <el-icon><Setting /></el-icon>设置
+                  </el-dropdown-item>
+                  <el-dropdown-item v-if="authStore.isAdmin" @click="$router.push('/admin')">
+                    <el-icon><Setting /></el-icon>管理后台
                   </el-dropdown-item>
                   <el-dropdown-item divided @click="handleLogout">
                     <el-icon><SwitchButton /></el-icon>退出登录
@@ -106,6 +109,26 @@
             </div>
           </div>
         </div>
+
+        <div class="aside-section">
+          <h4 class="section-title">
+            <span :class="{ active: hotTab === 'day' }" @click="hotTab = 'day'; fetchHotPosts()">今日热点</span>
+            <span class="divider">|</span>
+            <span :class="{ active: hotTab === 'week' }" @click="hotTab = 'week'; fetchHotPosts()">本周热点</span>
+          </h4>
+          <div class="hot-list">
+            <div
+              v-for="(post, index) in hotPosts"
+              :key="post.id"
+              class="hot-item"
+              @click="$router.push(`/post/${post.id}`)"
+            >
+              <span class="hot-rank" :class="{ top: index < 3 }">{{ index + 1 }}</span>
+              <span class="hot-title">{{ post.title }}</span>
+            </div>
+            <div v-if="!hotPosts.length" class="empty-text">暂无数据</div>
+          </div>
+        </div>
       </el-aside>
 
       <el-main class="layout-content">
@@ -123,6 +146,9 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useNotificationStore } from '@/stores/notification'
+import { useChatStore } from '@/stores/chat'
+import { postApi } from '@/api/post'
 import {
   Search, Bell, ChatDotRound, User, Document, Star,
   Setting, SwitchButton, HomeFilled, Menu, Edit, Plus
@@ -130,15 +156,26 @@ import {
 
 const router = useRouter()
 const authStore = useAuthStore()
+const notificationStore = useNotificationStore()
+const chatStore = useChatStore()
 
 const searchKeyword = ref('')
-const unreadCount = ref(0)
-const messageCount = ref(0)
 const myTiebas = ref([])
+const hotPosts = ref([])
+const hotTab = ref('day')
 
 const handleSearch = () => {
   if (searchKeyword.value.trim()) {
     router.push(`/search?keyword=${encodeURIComponent(searchKeyword.value)}`)
+  }
+}
+
+const fetchHotPosts = async () => {
+  try {
+    const res = await postApi.getHotPosts({ period: hotTab.value })
+    hotPosts.value = res.data
+  } catch {
+    // ignore
   }
 }
 
@@ -147,9 +184,15 @@ const handleLogout = () => {
 }
 
 onMounted(async () => {
-  if (authStore.isLoggedIn && !authStore.user) {
-    await authStore.fetchProfile()
+  if (authStore.isLoggedIn) {
+    if (!authStore.user) {
+      await authStore.fetchProfile()
+    }
+    notificationStore.fetchUnreadCount()
+    chatStore.initSocket()
+    chatStore.fetchConversations()
   }
+  fetchHotPosts()
 })
 </script>
 
@@ -261,6 +304,70 @@ onMounted(async () => {
         &:hover {
           color: #409eff;
         }
+      }
+    }
+
+    .section-title {
+      span {
+        cursor: pointer;
+        color: #909399;
+
+        &.active {
+          color: #303133;
+          font-weight: 500;
+        }
+      }
+
+      .divider {
+        margin: 0 8px;
+        cursor: default;
+      }
+    }
+
+    .hot-list {
+      .hot-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 8px 0;
+        font-size: 13px;
+        color: #606266;
+        cursor: pointer;
+
+        &:hover {
+          color: #409eff;
+        }
+
+        .hot-rank {
+          flex-shrink: 0;
+          width: 18px;
+          height: 18px;
+          border-radius: 3px;
+          background: #f0f0f0;
+          color: #909399;
+          font-size: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          &.top {
+            background: #409eff;
+            color: #fff;
+          }
+        }
+
+        .hot-title {
+          flex: 1;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+
+      .empty-text {
+        font-size: 13px;
+        color: #c0c4cc;
+        padding: 8px 0;
       }
     }
   }

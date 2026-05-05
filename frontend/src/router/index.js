@@ -43,6 +43,12 @@ const routes = [
         meta: { title: '贴吧详情' }
       },
       {
+        path: 'tieba/:id/manage',
+        name: 'TiebaOwnerManage',
+        component: () => import('@/views/tieba/TiebaOwnerManage.vue'),
+        meta: { requiresAuth: true, title: '贴吧管理' }
+      },
+      {
         path: 'post/create/:tiebaId?',
         name: 'CreatePost',
         component: () => import('@/views/post/CreatePost.vue'),
@@ -142,6 +148,12 @@ const routes = [
         name: 'AdminReports',
         component: () => import('@/views/admin/ReportManage.vue'),
         meta: { title: '举报管理' }
+      },
+      {
+        path: 'categories',
+        name: 'AdminCategories',
+        component: () => import('@/views/admin/CategoryManage.vue'),
+        meta: { title: '分类管理' }
       }
     ]
   },
@@ -157,7 +169,7 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
   document.title = to.meta.title ? `${to.meta.title} - 南师大贴吧` : '南师大贴吧'
@@ -172,9 +184,20 @@ router.beforeEach((to, from, next) => {
     return
   }
 
-  if (to.meta.requiresAdmin && authStore.user?.role !== 'admin') {
-    next({ name: 'Home' })
-    return
+  // 需要管理员权限时，确保用户信息已加载
+  if (to.meta.requiresAdmin) {
+    if (!authStore.user && authStore.isLoggedIn) {
+      try {
+        await authStore.fetchProfile()
+      } catch {
+        next({ name: 'Login' })
+        return
+      }
+    }
+    if (authStore.user?.role !== 'admin') {
+      next({ name: 'Home' })
+      return
+    }
   }
 
   next()

@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { Tieba, TiebaCategory, TiebaFollow, Post, User } = require('../models');
+const { sequelize, Tieba, TiebaCategory, TiebaFollow, Post, User } = require('../models');
 const ApiResponse = require('../utils/response');
 
 const getCategories = async (req, res, next) => {
@@ -36,7 +36,8 @@ const list = async (req, res, next) => {
         order = [['member_count', 'DESC']];
         break;
       default:
-        order = [['post_count', 'DESC']];
+        // 综合热度：帖子数*2 + 关注数
+        order = [[sequelize.literal('(Tieba.post_count * 2 + Tieba.member_count)'), 'DESC']];
     }
 
     const { count, rows } = await Tieba.findAndCountAll({
@@ -186,6 +187,7 @@ const getPosts = async (req, res, next) => {
       ],
       order: [
         ['is_top', 'DESC'],
+        ['is_essence', 'DESC'],
         ['created_at', 'DESC']
       ],
       limit: parseInt(pageSize),
@@ -198,6 +200,25 @@ const getPosts = async (req, res, next) => {
   }
 };
 
+const remove = async (req, res, next) => {
+  try {
+    const tieba = await Tieba.findByPk(req.params.id);
+    if (!tieba) {
+      return res.status(404).json(ApiResponse.error('贴吧不存在', 404));
+    }
+
+    // 只有管理员可以删除贴吧
+    if (req.user.role !== 'admin') {
+      return res.status(403).json(ApiResponse.error('需要管理员权限', 403));
+    }
+
+    await tieba.update({ status: 0 });
+    res.json(ApiResponse.success(null, '贴吧已关闭'));
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getCategories,
   list,
@@ -205,5 +226,6 @@ module.exports = {
   create,
   update,
   follow,
-  getPosts
+  getPosts,
+  remove
 };

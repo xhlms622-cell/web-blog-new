@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 项目概述
 
-南师大贴吧 (NNU Tieba) — 类百度贴吧的校园论坛系统。前后端分离架构，开发中（目前仅完成用户认证模块）。
+南师大贴吧 (NNU Tieba) — 类百度贴吧的校园论坛系统。前后端分离架构，开发中。
 
 ## 常用命令
 
@@ -67,7 +67,7 @@ Sealos 云端 MySQL，数据库名 `mydb`，配置在 `backend/.env`。
 
 ### 前端约定
 
-- **API 代理**: Vite 开发服务器将 `/api` 请求代理到 `http://localhost:3000`
+- **API 代理**: Vite 开发服务器将 `/api` 和 `/uploads` 请求代理到 `http://localhost:3000`
 - **自动导入**: unplugin-auto-import 自动导入 Vue/Vue Router/Pinia API；unplugin-vue-components 自动导入 Element Plus 组件
 - **路由守卫**: `router/index.js` 中根据 `meta.requiresAuth`、`meta.requiresAdmin`、`meta.guest` 控制访问
 - **样式**: 使用 SCSS（`assets/styles/main.scss`），`@` 别名指向 `src/`
@@ -82,3 +82,20 @@ Sealos 云端 MySQL，数据库名 `mydb`，配置在 `backend/.env`。
 - Post ↔ User（通过 Like/Favorite）: 点赞、收藏
 - ChatConversation ↔ ChatMessage: 私信会话
 - PointLog / Level: 用户积分等级体系
+
+## 开发进度
+
+- [x] 项目架构搭建
+- [x] 用户认证模块（注册/登录/JWT）
+- [x] 贴吧模块（分类/列表/详情/创建/关注）
+- [x] 帖子模块（创建/详情/列表/点赞/收藏/图片上传）
+- [x] 评论模块（评论/回复/楼层号）
+- [x] 搜索功能（帖子/贴吧/用户分类搜索）
+- [x] 用户主页/设置（资料编辑/密码修改/关注）
+- [x] 通知列表页面（类型筛选/分页/标记已读）
+- [x] 私信聊天（Socket.io 实时通信/会话列表/消息历史）
+- [x] 管理后台（Dashboard/用户/贴吧/帖子/举报/分类管理）
+- [x] 吧主管理系统（概览/帖子管理/成员管理/举报管理）
+- [x] 热点排行（加权评分/时间衰减/日榜/周榜）
+- [x] 举报功能（用户举报/管理员处理）
+- [x] 帖子/贴吧删除（权限控制）

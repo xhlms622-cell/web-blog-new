@@ -11,6 +11,7 @@ router.get('/:id', optionalAuth, tiebaController.getById);
 router.post('/', auth, createTiebaValidator, validate, tiebaController.create);
 router.put('/:id', auth, updateTiebaValidator, validate, tiebaController.update);
 router.post('/:id/follow', auth, tiebaController.follow);
+router.delete('/:id', auth, tiebaController.remove);
 router.get('/:id/posts', optionalAuth, tiebaController.getPosts);
 
 module.exports = router;

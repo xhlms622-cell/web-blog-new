@@ -17,7 +17,7 @@ const PointLog = sequelize.define('PointLog', {
     comment: '变动积分，正负数'
   },
   type: {
-    type: DataTypes.ENUM('post', 'comment', 'like_received', 'daily_login', 'favorited', 'punish'),
+    type: DataTypes.STRING(20),
     allowNull: false
   },
   target_type: {

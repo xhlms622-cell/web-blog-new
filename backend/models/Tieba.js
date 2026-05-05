@@ -48,7 +48,6 @@ const Tieba = sequelize.define('Tieba', {
   createdAt: 'created_at',
   updatedAt: 'updated_at',
   indexes: [
-    { fields: ['name'], unique: true },
     { fields: ['category_id'] },
     { fields: ['member_count'] }
   ]
