@@ -91,6 +91,8 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/main.scss';
+
 .home-page {
   .page-header {
     display: flex;
@@ -101,6 +103,8 @@ onMounted(() => {
     h1 {
       font-size: 24px;
       color: #303133;
+
+      @include mobile { font-size: 20px; }
     }
   }
 
@@ -109,6 +113,8 @@ onMounted(() => {
     background: #fff;
     border-radius: 8px;
     padding: 20px;
+
+    @include mobile { padding: 16px; }
 
     .section-header {
       display: flex;
@@ -130,6 +136,8 @@ onMounted(() => {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 12px;
+
+      @include mobile { grid-template-columns: 1fr; }
 
       .tieba-card {
         display: flex;
@@ -155,13 +163,19 @@ onMounted(() => {
           color: #fff;
           font-size: 18px;
           font-weight: bold;
+          flex-shrink: 0;
         }
 
         .tieba-info {
+          min-width: 0;
+
           .tieba-name {
             font-size: 14px;
             font-weight: 500;
             color: #303133;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
 
           .tieba-count {

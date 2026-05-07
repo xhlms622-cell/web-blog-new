@@ -331,14 +331,17 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/main.scss';
+
 .tieba-manage-page {
   .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    gap: 12px;
 
-    h2 { margin: 0; font-size: 18px; }
+    h2 { margin: 0; font-size: 18px; @include mobile { font-size: 15px; } }
   }
 }
 
@@ -347,6 +350,8 @@ onMounted(() => {
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   max-width: 600px;
+
+  @include mobile { grid-template-columns: repeat(3, 1fr); gap: 8px; }
 }
 
 .stat-card {
@@ -363,6 +368,11 @@ onMounted(() => {
   display: flex;
   gap: 12px;
   margin-bottom: 16px;
+  flex-wrap: wrap;
+
+  @include mobile {
+    .el-input, .el-select { width: 100% !important; }
+  }
 }
 
 .user-cell {

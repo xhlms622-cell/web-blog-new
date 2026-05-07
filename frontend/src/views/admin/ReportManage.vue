@@ -141,6 +141,8 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/main.scss';
+
 .page-header {
   margin-bottom: 16px;
 
@@ -154,6 +156,15 @@ onMounted(() => {
   display: flex;
   gap: 12px;
   margin-bottom: 16px;
+  flex-wrap: wrap;
+
+  @include mobile {
+    .el-input, .el-select { width: 100% !important; }
+  }
+}
+
+.el-table {
+  @include mobile { font-size: 13px; }
 }
 
 .text-muted {

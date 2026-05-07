@@ -1,7 +1,7 @@
 <template>
   <div class="chat-page">
     <!-- 左侧会话列表 -->
-    <div class="conversation-list">
+    <div class="conversation-list" :class="{ 'mobile-hidden': isMobile && chatStore.currentConversation }">
       <div class="list-header">
         <h3>私信</h3>
       </div>
@@ -32,9 +32,10 @@
     </div>
 
     <!-- 右侧消息区域 -->
-    <div class="message-area">
+    <div class="message-area" :class="{ 'mobile-hidden': isMobile && !chatStore.currentConversation }">
       <template v-if="chatStore.currentConversation">
         <div class="message-header">
+          <el-icon class="back-btn" @click="backToList"><ArrowLeft /></el-icon>
           <span>{{ chatStore.currentConversation.otherUser?.nickname }}</span>
         </div>
 
@@ -82,6 +83,7 @@ import { ref, onMounted, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useChatStore } from '@/stores/chat'
+import { ArrowLeft } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -91,6 +93,11 @@ const chatStore = useChatStore()
 const inputText = ref('')
 const sending = ref(false)
 const messageListRef = ref(null)
+const isMobile = ref(window.innerWidth < 768)
+
+window.addEventListener('resize', () => {
+  isMobile.value = window.innerWidth < 768
+})
 
 const formatTime = (dateStr) => {
   if (!dateStr) return ''
@@ -120,6 +127,10 @@ const selectConversation = async (conv) => {
   await chatStore.openConversation(conv)
   router.replace('/chat')
   scrollToBottom()
+}
+
+const backToList = () => {
+  chatStore.currentConversation = null
 }
 
 const handleSend = async () => {
@@ -155,6 +166,8 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/main.scss';
+
 .chat-page {
   display: flex;
   height: calc(100vh - 120px);
@@ -168,6 +181,14 @@ onMounted(async () => {
   border-right: 1px solid #e4e7ed;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
+
+  @include mobile {
+    width: 100%;
+    border-right: none;
+
+    &.mobile-hidden { display: none; }
+  }
 
   .list-header {
     padding: 16px;
@@ -245,6 +266,11 @@ onMounted(async () => {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
+
+  @include mobile {
+    &.mobile-hidden { display: none; }
+  }
 }
 
 .message-header {
@@ -252,12 +278,27 @@ onMounted(async () => {
   border-bottom: 1px solid #e4e7ed;
   font-size: 16px;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .back-btn {
+    display: none;
+    cursor: pointer;
+    font-size: 20px;
+
+    &:hover { color: #409eff; }
+
+    @include mobile { display: block; }
+  }
 }
 
 .message-list {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
+
+  @include mobile { padding: 12px; }
 }
 
 .message-item {
@@ -283,6 +324,8 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   max-width: 60%;
+
+  @include mobile { max-width: 75%; }
 }
 
 .message-content {
@@ -305,6 +348,8 @@ onMounted(async () => {
   gap: 10px;
   padding: 16px;
   border-top: 1px solid #e4e7ed;
+
+  @include mobile { padding: 12px; }
 }
 
 .no-conversation {

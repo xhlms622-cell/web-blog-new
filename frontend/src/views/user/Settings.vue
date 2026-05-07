@@ -172,15 +172,21 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/main.scss';
+
 .settings-page {
   background: #fff;
   border-radius: 8px;
   padding: 24px;
 
+  @include mobile { padding: 16px; }
+
   h1 {
     font-size: 22px;
     color: #303133;
     margin-bottom: 24px;
+
+    @include mobile { font-size: 18px; }
   }
 
   .avatar-upload {

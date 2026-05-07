@@ -120,12 +120,15 @@ onMounted(() => { loadCategories() })
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/main.scss';
+
 .category-manage {
   .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
+    gap: 12px;
 
     h2 { margin: 0; font-size: 18px; }
   }

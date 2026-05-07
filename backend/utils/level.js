@@ -178,6 +178,13 @@ const getLevelProgress = async (userId) => {
 
   const dailyTotal = await getDailyTotal(userId);
 
+  // 检查今日是否已签到
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayCheckin = await PointLog.findOne({
+    where: { user_id: userId, type: 'checkin', created_at: { [Op.gte]: todayStart } }
+  });
+
   return {
     level: currentLevel,
     levelName,
@@ -189,7 +196,8 @@ const getLevelProgress = async (userId) => {
     progress: Math.min(progress, 100),
     dailyEarned: dailyTotal,
     dailyLimit: DAILY_LIMIT,
-    dailyRemaining: DAILY_LIMIT - dailyTotal
+    dailyRemaining: DAILY_LIMIT - dailyTotal,
+    checkedIn: !!todayCheckin
   };
 };
 

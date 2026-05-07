@@ -138,10 +138,14 @@ watch(() => route.query.keyword, (newKw) => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/main.scss';
+
 .search-page {
   .search-header {
     margin-bottom: 20px;
     max-width: 600px;
+
+    @include mobile { max-width: none; }
   }
 
   .loading {

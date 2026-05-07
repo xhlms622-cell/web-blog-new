@@ -89,6 +89,8 @@ const formatTime = (time) => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/main.scss';
+
 .post-list {
   .loading {
     padding: 20px;
@@ -122,6 +124,7 @@ const formatTime = (time) => {
           align-items: center;
           gap: 12px;
           font-size: 13px;
+          flex-wrap: wrap;
 
           .author {
             color: #303133;
@@ -179,6 +182,8 @@ const formatTime = (time) => {
             width: 100px;
             height: 100px;
             border-radius: 6px;
+
+            @include mobile { width: 70px; height: 70px; }
           }
 
           .thumb-more {
@@ -191,6 +196,8 @@ const formatTime = (time) => {
             justify-content: center;
             font-size: 14px;
             color: #909399;
+
+            @include mobile { width: 70px; height: 70px; }
           }
         }
       }

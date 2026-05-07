@@ -152,6 +152,8 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/main.scss';
+
 .create-post-page {
   display: flex;
   justify-content: center;
@@ -159,9 +161,12 @@ onMounted(async () => {
 
   .form-card {
     width: 800px;
+    max-width: 100%;
     background: #fff;
     border-radius: 8px;
     padding: 32px;
+
+    @include mobile { padding: 20px 16px; }
 
     h1 {
       font-size: 22px;
@@ -183,6 +188,8 @@ onMounted(async () => {
         position: relative;
         width: 100px;
         height: 100px;
+
+        @include mobile { width: 70px; height: 70px; }
 
         .preview-img {
           width: 100%;
@@ -216,6 +223,8 @@ onMounted(async () => {
           font-size: 12px;
           cursor: pointer;
           transition: border-color 0.3s;
+
+          @include mobile { width: 70px; height: 70px; }
 
           &:hover {
             border-color: #409eff;

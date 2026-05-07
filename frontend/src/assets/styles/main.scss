@@ -14,6 +14,34 @@ $border-color: #dcdfe6;
 $border-color-light: #e4e7ed;
 $background-color: #f5f5f5;
 
+// 响应式断点
+$breakpoint-mobile: 768px;
+$breakpoint-tablet: 1024px;
+
+@mixin mobile {
+  @media (max-width: #{$breakpoint-mobile - 1px}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: $breakpoint-mobile) and (max-width: #{$breakpoint-tablet - 1px}) {
+    @content;
+  }
+}
+
+@mixin tablet-and-below {
+  @media (max-width: #{$breakpoint-tablet - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: $breakpoint-tablet) {
+    @content;
+  }
+}
+
 // 重置样式
 * {
   margin: 0;
@@ -43,6 +71,10 @@ a {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+
+  @include mobile {
+    padding: 0 12px;
+  }
 }
 
 .card {
@@ -80,4 +112,18 @@ a {
 // Element Plus 覆盖
 .el-button--primary {
   --el-button-bg-color: #{$primary-color};
+}
+
+// 移动端 dialog 适配
+@include mobile {
+  .el-dialog {
+    --el-dialog-width: 90% !important;
+    width: 90% !important;
+    margin: 10vh auto !important;
+  }
+
+  .el-message-box {
+    --el-messagebox-width: 90% !important;
+    width: 90% !important;
+  }
 }

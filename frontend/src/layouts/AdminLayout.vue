@@ -4,45 +4,31 @@
       <div class="admin-logo">
         <span>管理后台</span>
       </div>
-      <el-menu
-        :default-active="$route.path"
-        router
-        background-color="#304156"
-        text-color="#bfcbd9"
-        active-text-color="#409eff"
-      >
-        <el-menu-item index="/admin/dashboard">
-          <el-icon><DataAnalysis /></el-icon>
-          <span>仪表盘</span>
-        </el-menu-item>
-        <el-menu-item index="/admin/users">
-          <el-icon><User /></el-icon>
-          <span>用户管理</span>
-        </el-menu-item>
-        <el-menu-item index="/admin/tiebas">
-          <el-icon><Menu /></el-icon>
-          <span>贴吧管理</span>
-        </el-menu-item>
-        <el-menu-item index="/admin/posts">
-          <el-icon><Document /></el-icon>
-          <span>帖子管理</span>
-        </el-menu-item>
-        <el-menu-item index="/admin/reports">
-          <el-icon><Warning /></el-icon>
-          <span>举报管理</span>
-        </el-menu-item>
-        <el-menu-item index="/admin/categories">
-          <el-icon><Folder /></el-icon>
-          <span>分类管理</span>
-        </el-menu-item>
-      </el-menu>
+      <AdminMenu @select="sidebarVisible = false" />
     </el-aside>
+
+    <!-- 移动端侧边栏抽屉 -->
+    <el-drawer
+      v-model="sidebarVisible"
+      direction="ltr"
+      size="240px"
+      :show-close="false"
+      class="admin-drawer"
+    >
+      <template #header>
+        <span class="drawer-title">管理后台</span>
+      </template>
+      <AdminMenu theme="light" @select="sidebarVisible = false" />
+    </el-drawer>
 
     <el-container>
       <el-header class="admin-header">
-        <el-button @click="$router.push('/')">返回前台</el-button>
+        <div class="header-left">
+          <el-icon class="hamburger" @click="sidebarVisible = true"><Menu /></el-icon>
+          <el-button @click="$router.push('/')">返回前台</el-button>
+        </div>
         <div class="admin-user">
-          <span>{{ authStore.user?.nickname }}</span>
+          <span class="admin-nickname">{{ authStore.user?.nickname }}</span>
           <el-button type="danger" size="small" @click="authStore.logout()">退出</el-button>
         </div>
       </el-header>
@@ -55,19 +41,26 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import { DataAnalysis, User, Menu, Document, Warning, Folder } from '@element-plus/icons-vue'
+import { Menu } from '@element-plus/icons-vue'
+import AdminMenu from './components/AdminMenu.vue'
 
 const authStore = useAuthStore()
+const sidebarVisible = ref(false)
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/main.scss';
+
 .admin-layout {
   min-height: 100vh;
 }
 
 .admin-aside {
   background: #304156;
+
+  @include tablet-and-below { display: none; }
 
   .admin-logo {
     height: 60px;
@@ -79,9 +72,13 @@ const authStore = useAuthStore()
     font-weight: bold;
     border-bottom: 1px solid #3a4a5d;
   }
+}
 
-  .el-menu {
-    border-right: none;
+.admin-drawer {
+  .drawer-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #409eff;
   }
 }
 
@@ -93,15 +90,38 @@ const authStore = useAuthStore()
   padding: 0 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .hamburger {
+      display: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: #606266;
+
+      &:hover { color: #409eff; }
+
+      @include tablet-and-below { display: block; }
+    }
+  }
+
   .admin-user {
     display: flex;
     align-items: center;
     gap: 12px;
+
+    .admin-nickname {
+      @include mobile { display: none; }
+    }
   }
 }
 
 .admin-main {
   background: #f5f5f5;
   padding: 20px;
+
+  @include mobile { padding: 12px; }
 }
 </style>

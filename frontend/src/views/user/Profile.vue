@@ -227,6 +227,7 @@ const loadLevelInfo = async () => {
   try {
     const res = await levelApi.getLevelInfo()
     levelInfo.value = res.data
+    checkedIn.value = !!res.data.checkedIn
   } catch { /* handled */ }
 }
 
@@ -298,6 +299,8 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/main.scss';
+
 .profile-page {
   .loading { padding: 40px; }
   .empty { padding: 40px; text-align: center; color: #909399; }
@@ -311,6 +314,13 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
     align-items: flex-start;
     margin-bottom: 16px;
 
+    @include mobile {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 20px 16px;
+    }
+
     .profile-info {
       flex: 1;
 
@@ -319,7 +329,9 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
         align-items: center;
         gap: 8px;
 
-        h1 { font-size: 22px; color: #303133; margin: 0; }
+        @include mobile { justify-content: center; }
+
+        h1 { font-size: 22px; color: #303133; margin: 0; @include mobile { font-size: 20px; } }
       }
 
       .signature { font-size: 14px; color: #909399; margin: 8px 0; }
@@ -329,6 +341,8 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
         font-size: 14px;
         color: #606266;
 
+        @include mobile { justify-content: center; }
+
         .stat-click {
           cursor: pointer;
           &:hover { color: #409eff; }
@@ -336,7 +350,12 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
       }
     }
 
-    .profile-actions { display: flex; gap: 8px; }
+    .profile-actions {
+      display: flex;
+      gap: 8px;
+
+      @include mobile { justify-content: center; width: 100%; }
+    }
   }
 
   .level-card {
@@ -344,6 +363,8 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 16px;
+
+    @include mobile { padding: 16px; }
 
     .level-card-header {
       display: flex;
@@ -391,11 +412,16 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
       gap: 24px;
       padding-top: 12px;
       border-top: 1px solid #f0f0f0;
+      flex-wrap: wrap;
+
+      @include mobile { gap: 16px; justify-content: center; }
 
       .stat-item {
         display: flex;
         flex-direction: column;
         align-items: center;
+        flex: 1;
+        min-width: 60px;
 
         .stat-value {
           font-size: 16px;
@@ -423,10 +449,14 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
       .exp-log-info {
         display: flex;
         flex-direction: column;
+        min-width: 0;
 
         .exp-log-desc {
           font-size: 14px;
           color: #303133;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         .exp-log-time {
@@ -439,6 +469,7 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
       .exp-log-points {
         font-size: 14px;
         font-weight: 500;
+        flex-shrink: 0;
 
         &.positive { color: #67c23a; }
         &.negative { color: #f56c6c; }

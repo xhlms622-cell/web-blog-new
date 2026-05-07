@@ -124,6 +124,8 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/main.scss';
+
 .tieba-list-page {
   .page-header {
     display: flex;
@@ -134,6 +136,8 @@ onMounted(async () => {
     h1 {
       font-size: 24px;
       color: #303133;
+
+      @include mobile { font-size: 20px; }
     }
   }
 
@@ -144,6 +148,13 @@ onMounted(async () => {
     margin-bottom: 20px;
     flex-wrap: wrap;
     gap: 12px;
+
+    @include mobile {
+      flex-direction: column;
+      align-items: stretch;
+
+      .el-input { width: 100% !important; }
+    }
   }
 
   .loading, .empty {
@@ -153,7 +164,7 @@ onMounted(async () => {
 
   .tieba-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 16px;
 
     .tieba-card {

@@ -2,21 +2,27 @@
   <el-container class="layout-container">
     <el-header class="layout-header">
       <div class="header-content">
+        <el-icon class="hamburger" @click="sidebarVisible = true"><Menu /></el-icon>
+
         <div class="logo" @click="$router.push('/')">
           <span class="logo-text">南师大贴吧</span>
         </div>
 
-        <div class="search-box">
+        <div class="search-box" :class="{ expanded: searchExpanded }">
           <el-input
             v-model="searchKeyword"
             placeholder="搜索帖子、贴吧、用户"
             @keyup.enter="handleSearch"
+            @focus="searchExpanded = true"
+            @blur="handleSearchBlur"
           >
             <template #prefix>
               <el-icon><Search /></el-icon>
             </template>
           </el-input>
         </div>
+
+        <el-icon class="search-toggle" @click="toggleSearch"><Search /></el-icon>
 
         <div class="header-right">
           <template v-if="authStore.isLoggedIn">
@@ -71,64 +77,34 @@
       </div>
     </el-header>
 
+    <!-- 移动端侧边栏抽屉 -->
+    <el-drawer
+      v-model="sidebarVisible"
+      direction="ltr"
+      size="240px"
+      :show-close="false"
+      class="mobile-sidebar-drawer"
+    >
+      <template #header>
+        <span class="drawer-title">南师大贴吧</span>
+      </template>
+      <SidebarContent
+        :my-tiebas="myTiebas"
+        :hot-posts="hotPosts"
+        :hot-tab="hotTab"
+        @navigate="sidebarVisible = false"
+        @switch-hot-tab="switchHotTab"
+      />
+    </el-drawer>
+
     <el-container class="layout-main">
       <el-aside width="200px" class="layout-aside">
-        <el-menu
-          :default-active="$route.path"
-          router
-          class="aside-menu"
-        >
-          <el-menu-item index="/">
-            <el-icon><HomeFilled /></el-icon>
-            <span>首页</span>
-          </el-menu-item>
-          <el-menu-item index="/tiebas">
-            <el-icon><Menu /></el-icon>
-            <span>贴吧列表</span>
-          </el-menu-item>
-          <el-menu-item index="/post/create">
-            <el-icon><Edit /></el-icon>
-            <span>发表帖子</span>
-          </el-menu-item>
-          <el-menu-item index="/tieba/create">
-            <el-icon><Plus /></el-icon>
-            <span>创建贴吧</span>
-          </el-menu-item>
-        </el-menu>
-
-        <div class="aside-section" v-if="myTiebas.length">
-          <h4 class="section-title">我关注的贴吧</h4>
-          <div class="tieba-list">
-            <div
-              v-for="tieba in myTiebas"
-              :key="tieba.id"
-              class="tieba-item"
-              @click="$router.push(`/tieba/${tieba.id}`)"
-            >
-              {{ tieba.name }}
-            </div>
-          </div>
-        </div>
-
-        <div class="aside-section">
-          <h4 class="section-title">
-            <span :class="{ active: hotTab === 'day' }" @click="hotTab = 'day'; fetchHotPosts()">今日热点</span>
-            <span class="divider">|</span>
-            <span :class="{ active: hotTab === 'week' }" @click="hotTab = 'week'; fetchHotPosts()">本周热点</span>
-          </h4>
-          <div class="hot-list">
-            <div
-              v-for="(post, index) in hotPosts"
-              :key="post.id"
-              class="hot-item"
-              @click="$router.push(`/post/${post.id}`)"
-            >
-              <span class="hot-rank" :class="{ top: index < 3 }">{{ index + 1 }}</span>
-              <span class="hot-title">{{ post.title }}</span>
-            </div>
-            <div v-if="!hotPosts.length" class="empty-text">暂无数据</div>
-          </div>
-        </div>
+        <SidebarContent
+          :my-tiebas="myTiebas"
+          :hot-posts="hotPosts"
+          :hot-tab="hotTab"
+          @switch-hot-tab="switchHotTab"
+        />
       </el-aside>
 
       <el-main class="layout-content">
@@ -149,9 +125,10 @@ import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notification'
 import { useChatStore } from '@/stores/chat'
 import { postApi } from '@/api/post'
+import SidebarContent from '@/components/common/SidebarContent.vue'
 import {
   Search, Bell, ChatDotRound, User, Document, Star,
-  Setting, SwitchButton, HomeFilled, Menu, Edit, Plus
+  Setting, SwitchButton, Menu
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
@@ -163,11 +140,29 @@ const searchKeyword = ref('')
 const myTiebas = ref([])
 const hotPosts = ref([])
 const hotTab = ref('day')
+const sidebarVisible = ref(false)
+const searchExpanded = ref(false)
 
 const handleSearch = () => {
   if (searchKeyword.value.trim()) {
     router.push(`/search?keyword=${encodeURIComponent(searchKeyword.value)}`)
+    searchExpanded.value = false
   }
+}
+
+const toggleSearch = () => {
+  searchExpanded.value = !searchExpanded.value
+}
+
+const handleSearchBlur = () => {
+  if (!searchKeyword.value.trim()) {
+    searchExpanded.value = false
+  }
+}
+
+const switchHotTab = (tab) => {
+  hotTab.value = tab
+  fetchHotPosts()
 }
 
 const fetchHotPosts = async () => {
@@ -197,6 +192,8 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/main.scss';
+
 .layout-container {
   min-height: 100vh;
 }
@@ -219,8 +216,21 @@ onMounted(async () => {
     gap: 20px;
   }
 
+  .hamburger {
+    display: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #606266;
+    flex-shrink: 0;
+
+    &:hover { color: #409eff; }
+
+    @include tablet-and-below { display: block; }
+  }
+
   .logo {
     cursor: pointer;
+    flex-shrink: 0;
 
     .logo-text {
       font-size: 20px;
@@ -232,12 +242,42 @@ onMounted(async () => {
   .search-box {
     flex: 1;
     max-width: 400px;
+
+    @include mobile {
+      display: none;
+      &.expanded {
+        display: block;
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        top: 60px;
+        z-index: 99;
+        max-width: none;
+        padding: 8px 0;
+        background: #fff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border-radius: 0 0 8px 8px;
+      }
+    }
+  }
+
+  .search-toggle {
+    display: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #606266;
+    flex-shrink: 0;
+
+    &:hover { color: #409eff; }
+
+    @include mobile { display: block; }
   }
 
   .header-right {
     display: flex;
     align-items: center;
     gap: 16px;
+    margin-left: auto;
 
     .nav-badge {
       cursor: pointer;
@@ -261,8 +301,18 @@ onMounted(async () => {
       .nickname {
         font-size: 14px;
         color: #303133;
+
+        @include mobile { display: none; }
       }
     }
+  }
+}
+
+.mobile-sidebar-drawer {
+  .drawer-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #409eff;
   }
 }
 
@@ -280,102 +330,14 @@ onMounted(async () => {
   position: sticky;
   top: 80px;
 
-  .aside-menu {
-    border-right: none;
-  }
-
-  .aside-section {
-    padding: 16px;
-    border-top: 1px solid #eee;
-
-    .section-title {
-      font-size: 14px;
-      color: #909399;
-      margin-bottom: 12px;
-    }
-
-    .tieba-list {
-      .tieba-item {
-        padding: 8px 0;
-        font-size: 14px;
-        color: #606266;
-        cursor: pointer;
-
-        &:hover {
-          color: #409eff;
-        }
-      }
-    }
-
-    .section-title {
-      span {
-        cursor: pointer;
-        color: #909399;
-
-        &.active {
-          color: #303133;
-          font-weight: 500;
-        }
-      }
-
-      .divider {
-        margin: 0 8px;
-        cursor: default;
-      }
-    }
-
-    .hot-list {
-      .hot-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 8px;
-        padding: 8px 0;
-        font-size: 13px;
-        color: #606266;
-        cursor: pointer;
-
-        &:hover {
-          color: #409eff;
-        }
-
-        .hot-rank {
-          flex-shrink: 0;
-          width: 18px;
-          height: 18px;
-          border-radius: 3px;
-          background: #f0f0f0;
-          color: #909399;
-          font-size: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-
-          &.top {
-            background: #409eff;
-            color: #fff;
-          }
-        }
-
-        .hot-title {
-          flex: 1;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-      }
-
-      .empty-text {
-        font-size: 13px;
-        color: #c0c4cc;
-        padding: 8px 0;
-      }
-    }
-  }
+  @include tablet-and-below { display: none; }
 }
 
 .layout-content {
   padding: 20px;
   min-height: calc(100vh - 120px);
+
+  @include mobile { padding: 12px; }
 }
 
 .layout-footer {

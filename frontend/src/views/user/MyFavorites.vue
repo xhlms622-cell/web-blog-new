@@ -38,8 +38,10 @@ onMounted(() => loadPosts())
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/main.scss';
+
 .my-favorites-page {
-  h1 { font-size: 22px; color: #303133; margin-bottom: 20px; }
+  h1 { font-size: 22px; color: #303133; margin-bottom: 20px; @include mobile { font-size: 18px; } }
   .loading, .empty { padding: 20px; }
   .pagination { margin-top: 20px; display: flex; justify-content: center; }
 }

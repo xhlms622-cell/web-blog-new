@@ -1,7 +1,44 @@
+# 依赖
 node_modules/
+
+# 环境变量
 .env
+.env.local
+.env.*.local
+
+# 构建产物
 dist/
+build/
+
+# 上传文件
 uploads/
+
+# 日志
 *.log
+npm-debug.log*
+
+# 自动生成的类型声明（unplugin）
+frontend/src/auto-imports.d.ts
+frontend/src/components.d.ts
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 系统文件
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# Claude Code 本地配置
+.claude/settings.local.json
+.claude/worktrees/
+
+# PM2
+.pm2/
+
+# 调试
+.node-debugger/

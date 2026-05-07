@@ -134,20 +134,26 @@ const handleRegister = async () => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/main.scss';
+
 .auth-page {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
 }
 
 .auth-card {
   width: 400px;
+  max-width: 100%;
   padding: 40px;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+
+  @include mobile { padding: 24px 20px; }
 
   .auth-title {
     text-align: center;
@@ -155,6 +161,8 @@ const handleRegister = async () => {
     font-weight: 600;
     margin-bottom: 30px;
     color: #303133;
+
+    @include mobile { font-size: 20px; margin-bottom: 24px; }
   }
 
   .auth-footer {

@@ -103,6 +103,8 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/main.scss';
+
 .create-tieba-page {
   display: flex;
   justify-content: center;
@@ -110,9 +112,12 @@ onMounted(async () => {
 
   .form-card {
     width: 600px;
+    max-width: 100%;
     background: #fff;
     border-radius: 8px;
     padding: 32px;
+
+    @include mobile { padding: 20px 16px; }
 
     h1 {
       font-size: 22px;

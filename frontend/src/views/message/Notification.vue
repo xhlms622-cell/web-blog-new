@@ -162,10 +162,14 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/main.scss';
+
 .notification-page {
   background: #fff;
   border-radius: 8px;
   padding: 20px;
+
+  @include mobile { padding: 16px; }
 }
 
 .page-header {
@@ -182,6 +186,7 @@ onMounted(() => {
 
 .filter-bar {
   margin-bottom: 16px;
+  overflow-x: auto;
 }
 
 .notification-list {

@@ -135,6 +135,8 @@ watch(() => route.params.id, (newId) => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/main.scss';
+
 .tieba-detail-page {
   .loading {
     padding: 40px;
@@ -149,9 +151,17 @@ watch(() => route.params.id, (newId) => {
     align-items: flex-start;
     margin-bottom: 16px;
 
+    @include mobile {
+      flex-direction: column;
+      gap: 16px;
+      padding: 16px;
+    }
+
     .header-left {
       display: flex;
       gap: 20px;
+
+      @include mobile { gap: 12px; }
 
       .tieba-avatar {
         width: 80px;
@@ -165,14 +175,20 @@ watch(() => route.params.id, (newId) => {
         font-size: 32px;
         font-weight: bold;
         flex-shrink: 0;
+
+        @include mobile { width: 60px; height: 60px; font-size: 24px; }
       }
 
       .tieba-info {
+        min-width: 0;
+
         h1 {
           font-size: 22px;
           font-weight: 600;
           color: #303133;
           margin-bottom: 6px;
+
+          @include mobile { font-size: 18px; }
         }
 
         .tieba-desc {
@@ -186,6 +202,7 @@ watch(() => route.params.id, (newId) => {
           gap: 16px;
           font-size: 13px;
           color: #909399;
+          flex-wrap: wrap;
 
           .category {
             color: #409eff;
@@ -198,6 +215,11 @@ watch(() => route.params.id, (newId) => {
       display: flex;
       gap: 8px;
       flex-shrink: 0;
+
+      @include mobile {
+        width: 100%;
+        .el-button { flex: 1; }
+      }
     }
   }
 

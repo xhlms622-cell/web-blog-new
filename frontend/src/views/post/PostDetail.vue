@@ -333,6 +333,8 @@ watch(() => route.params.id, (newId) => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/main.scss';
+
 .post-detail-page {
   .loading {
     padding: 40px;
@@ -344,11 +346,19 @@ watch(() => route.params.id, (newId) => {
     padding: 24px;
     margin-bottom: 16px;
 
+    @include mobile { padding: 16px; }
+
     .post-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
+
+      @include mobile {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
 
       .author-info {
         display: flex;
@@ -399,6 +409,8 @@ watch(() => route.params.id, (newId) => {
       font-weight: 600;
       color: #303133;
       margin-bottom: 16px;
+
+      @include mobile { font-size: 18px; }
     }
 
     .post-content {
@@ -420,6 +432,8 @@ watch(() => route.params.id, (newId) => {
         height: 200px;
         border-radius: 6px;
         cursor: pointer;
+
+        @include mobile { width: calc(33.33% - 6px); height: auto; aspect-ratio: 1; }
       }
     }
 
@@ -438,6 +452,7 @@ watch(() => route.params.id, (newId) => {
       display: flex;
       gap: 12px;
       align-items: center;
+      flex-wrap: wrap;
 
       .essence-tag {
         margin-left: auto;
@@ -449,6 +464,8 @@ watch(() => route.params.id, (newId) => {
     background: #fff;
     border-radius: 8px;
     padding: 24px;
+
+    @include mobile { padding: 16px; }
 
     h3 {
       font-size: 16px;
@@ -491,6 +508,7 @@ watch(() => route.params.id, (newId) => {
             align-items: center;
             gap: 8px;
             font-size: 13px;
+            flex-wrap: wrap;
 
             .author-name {
               font-weight: 500;
@@ -513,6 +531,8 @@ watch(() => route.params.id, (newId) => {
           line-height: 1.6;
           margin-bottom: 8px;
           padding-left: 42px;
+
+          @include mobile { padding-left: 0; }
         }
 
         .replies {
@@ -521,6 +541,8 @@ watch(() => route.params.id, (newId) => {
           padding: 8px 12px;
           background: #f5f7fa;
           border-radius: 4px;
+
+          @include mobile { margin-left: 0; }
 
           .reply-item {
             font-size: 13px;
@@ -540,6 +562,8 @@ watch(() => route.params.id, (newId) => {
 
         .comment-actions {
           padding-left: 42px;
+
+          @include mobile { padding-left: 0; }
         }
       }
     }
