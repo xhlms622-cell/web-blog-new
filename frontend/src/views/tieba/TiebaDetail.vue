@@ -143,7 +143,7 @@ watch(() => route.params.id, (newId) => {
   }
 
   .tieba-header {
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 8px;
     padding: 24px;
     display: flex;
@@ -185,7 +185,7 @@ watch(() => route.params.id, (newId) => {
         h1 {
           font-size: 22px;
           font-weight: 600;
-          color: #303133;
+          color: var(--text-primary);
           margin-bottom: 6px;
 
           @include mobile { font-size: 18px; }
@@ -193,7 +193,7 @@ watch(() => route.params.id, (newId) => {
 
         .tieba-desc {
           font-size: 14px;
-          color: #606266;
+          color: var(--text-regular);
           margin-bottom: 8px;
         }
 
@@ -201,11 +201,11 @@ watch(() => route.params.id, (newId) => {
           display: flex;
           gap: 16px;
           font-size: 13px;
-          color: #909399;
+          color: var(--text-secondary);
           flex-wrap: wrap;
 
           .category {
-            color: #409eff;
+            color: var(--primary-color);
           }
         }
       }

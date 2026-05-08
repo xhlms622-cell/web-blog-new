@@ -82,27 +82,27 @@ const tier = computed(() => {
 
   // Color tiers
   &.level-tier-green {
-    background: #f0f9eb;
-    color: #67c23a;
-    border: 1px solid #e1f3d8;
+    background: color-mix(in srgb, var(--success-color) 12%, transparent);
+    color: var(--success-color);
+    border: 1px solid color-mix(in srgb, var(--success-color) 20%, transparent);
   }
 
   &.level-tier-blue {
-    background: #ecf5ff;
-    color: #409eff;
-    border: 1px solid #d9ecff;
+    background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+    color: var(--primary-color);
+    border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
   }
 
   &.level-tier-purple {
-    background: #f4ecff;
+    background: color-mix(in srgb, #9b59b6 12%, transparent);
     color: #9b59b6;
-    border: 1px solid #e8d5f5;
+    border: 1px solid color-mix(in srgb, #9b59b6 20%, transparent);
   }
 
   &.level-tier-gold {
-    background: #fdf6ec;
-    color: #e6a23c;
-    border: 1px solid #faecd8;
+    background: color-mix(in srgb, var(--warning-color) 12%, transparent);
+    color: var(--warning-color);
+    border: 1px solid color-mix(in srgb, var(--warning-color) 20%, transparent);
   }
 }
 

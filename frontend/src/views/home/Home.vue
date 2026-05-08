@@ -102,7 +102,7 @@ onMounted(() => {
 
     h1 {
       font-size: 24px;
-      color: #303133;
+      color: var(--text-primary);
 
       @include mobile { font-size: 20px; }
     }
@@ -110,9 +110,10 @@ onMounted(() => {
 
   .hot-tiebas {
     margin-top: 20px;
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 8px;
     padding: 20px;
+    transition: background-color 0.3s;
 
     @include mobile { padding: 16px; }
 
@@ -124,7 +125,7 @@ onMounted(() => {
 
       h3 {
         font-size: 16px;
-        color: #303133;
+        color: var(--text-primary);
       }
     }
 
@@ -149,7 +150,7 @@ onMounted(() => {
         transition: background 0.3s;
 
         &:hover {
-          background: #f5f7fa;
+          background: var(--bg-hover);
         }
 
         .tieba-avatar {
@@ -172,7 +173,7 @@ onMounted(() => {
           .tieba-name {
             font-size: 14px;
             font-weight: 500;
-            color: #303133;
+            color: var(--text-primary);
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -180,7 +181,7 @@ onMounted(() => {
 
           .tieba-count {
             font-size: 12px;
-            color: #909399;
+            color: var(--text-secondary);
             margin-top: 4px;
           }
         }

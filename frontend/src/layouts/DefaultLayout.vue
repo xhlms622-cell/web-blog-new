@@ -24,6 +24,8 @@
 
         <el-icon class="search-toggle" @click="toggleSearch"><Search /></el-icon>
 
+        <ThemeToggle />
+
         <div class="header-right">
           <template v-if="authStore.isLoggedIn">
             <el-badge :value="notificationStore.unreadCount" :hidden="!notificationStore.unreadCount" class="nav-badge">
@@ -113,7 +115,7 @@
     </el-container>
 
     <el-footer class="layout-footer">
-      <p>© 2024 南师大贴吧 - 南师大学生交流社区</p>
+      <p>© {{ new Date().getFullYear() }} 南师大贴吧 - 南师大学生交流社区</p>
     </el-footer>
   </el-container>
 </template>
@@ -126,6 +128,7 @@ import { useNotificationStore } from '@/stores/notification'
 import { useChatStore } from '@/stores/chat'
 import { postApi } from '@/api/post'
 import SidebarContent from '@/components/common/SidebarContent.vue'
+import ThemeToggle from '@/components/ThemeToggle.vue'
 import {
   Search, Bell, ChatDotRound, User, Document, Star,
   Setting, SwitchButton, Menu
@@ -199,13 +202,14 @@ onMounted(async () => {
 }
 
 .layout-header {
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   padding: 0 20px;
   height: 60px;
   position: sticky;
   top: 0;
   z-index: 100;
+  transition: background-color 0.3s;
 
   .header-content {
     max-width: 1400px;
@@ -220,10 +224,10 @@ onMounted(async () => {
     display: none;
     font-size: 22px;
     cursor: pointer;
-    color: #606266;
+    color: var(--text-regular);
     flex-shrink: 0;
 
-    &:hover { color: #409eff; }
+    &:hover { color: var(--primary-color); }
 
     @include tablet-and-below { display: block; }
   }
@@ -235,7 +239,7 @@ onMounted(async () => {
     .logo-text {
       font-size: 20px;
       font-weight: bold;
-      color: #409eff;
+      color: var(--primary-color);
     }
   }
 
@@ -254,7 +258,7 @@ onMounted(async () => {
         z-index: 99;
         max-width: none;
         padding: 8px 0;
-        background: #fff;
+        background: var(--bg-card);
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         border-radius: 0 0 8px 8px;
       }
@@ -265,10 +269,10 @@ onMounted(async () => {
     display: none;
     font-size: 20px;
     cursor: pointer;
-    color: #606266;
+    color: var(--text-regular);
     flex-shrink: 0;
 
-    &:hover { color: #409eff; }
+    &:hover { color: var(--primary-color); }
 
     @include mobile { display: block; }
   }
@@ -284,10 +288,10 @@ onMounted(async () => {
 
       .nav-icon {
         font-size: 20px;
-        color: #606266;
+        color: var(--text-regular);
 
         &:hover {
-          color: #409eff;
+          color: var(--primary-color);
         }
       }
     }
@@ -300,7 +304,7 @@ onMounted(async () => {
 
       .nickname {
         font-size: 14px;
-        color: #303133;
+        color: var(--text-primary);
 
         @include mobile { display: none; }
       }
@@ -312,7 +316,7 @@ onMounted(async () => {
   .drawer-title {
     font-size: 18px;
     font-weight: bold;
-    color: #409eff;
+    color: var(--primary-color);
   }
 }
 
@@ -323,12 +327,13 @@ onMounted(async () => {
 }
 
 .layout-aside {
-  background: #fff;
+  background: var(--bg-card);
   margin-top: 20px;
   border-radius: 8px;
   height: fit-content;
   position: sticky;
   top: 80px;
+  transition: background-color 0.3s;
 
   @include tablet-and-below { display: none; }
 }
@@ -341,10 +346,11 @@ onMounted(async () => {
 }
 
 .layout-footer {
-  background: #fff;
+  background: var(--bg-card);
   text-align: center;
   padding: 20px;
-  color: #909399;
+  color: var(--text-secondary);
   font-size: 14px;
+  transition: background-color 0.3s;
 }
 </style>

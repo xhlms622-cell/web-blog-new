@@ -179,7 +179,12 @@ const updatePostStatus = async (req, res, next) => {
       return res.status(404).json(ApiResponse.error('帖子不存在', 404));
     }
 
-    await post.update(req.body);
+    const { status, is_top, is_essence } = req.body;
+    await post.update({
+      ...(status !== undefined && { status }),
+      ...(is_top !== undefined && { is_top }),
+      ...(is_essence !== undefined && { is_essence })
+    });
     res.json(ApiResponse.success(null, '帖子状态已更新'));
   } catch (error) {
     next(error);

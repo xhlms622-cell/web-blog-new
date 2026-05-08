@@ -13,18 +13,17 @@ const list = async (req, res, next) => {
     switch (sort) {
       case 'essence':
         where.is_essence = 1;
-        order = [['created_at', 'DESC']];
+        order = [['is_top', 'DESC'], ['created_at', 'DESC']];
         break;
       case 'hot':
-        // 热度排序：精华置顶，再按 点赞*3 + 评论*2 + 浏览*0.1 降序
         order = [
+          ['is_top', 'DESC'],
           ['is_essence', 'DESC'],
           [sequelize.literal('(Post.like_count * 3 + Post.comment_count * 2 + Post.view_count * 0.1)'), 'DESC']
         ];
         break;
       default:
-        // 默认：精华置顶，再按时间降序
-        order = [['is_essence', 'DESC'], ['created_at', 'DESC']];
+        order = [['is_top', 'DESC'], ['is_essence', 'DESC'], ['created_at', 'DESC']];
     }
 
     const { count, rows } = await Post.findAndCountAll({
@@ -209,6 +208,30 @@ const myPosts = async (req, res, next) => {
   }
 };
 
+const update = async (req, res, next) => {
+  try {
+    const post = await Post.findByPk(req.params.id);
+    if (!post || post.status === 0) {
+      return res.status(404).json(ApiResponse.error('帖子不存在', 404));
+    }
+
+    if (post.user_id !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json(ApiResponse.error('没有权限编辑此帖子', 403));
+    }
+
+    const { title, content, images } = req.body;
+    await post.update({
+      ...(title !== undefined && { title }),
+      ...(content !== undefined && { content }),
+      ...(images !== undefined && { images })
+    });
+
+    res.json(ApiResponse.success(post, '帖子已更新'));
+  } catch (error) {
+    next(error);
+  }
+};
+
 const remove = async (req, res, next) => {
   try {
     const post = await Post.findByPk(req.params.id);
@@ -297,4 +320,4 @@ const myFavorites = async (req, res, next) => {
   }
 };
 
-module.exports = { list, create, getById, like, favorite, myPosts, myFavorites, remove, getHotPosts };
+module.exports = { list, create, getById, update, like, favorite, myPosts, myFavorites, remove, getHotPosts };

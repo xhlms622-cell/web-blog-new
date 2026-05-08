@@ -104,12 +104,25 @@ const createReply = async (req, res, next) => {
       reply_to_user_id: reply_to_user_id || null
     });
 
+    // 通知评论作者（如果不是回复者自己）
     if (comment.user_id !== req.user.id) {
       await Notification.create({
         user_id: comment.user_id,
         type: 'reply',
         title: '收到回复',
         content: `回复了你的评论`,
+        target_type: 'post',
+        target_id: comment.post_id
+      });
+    }
+
+    // 通知被回复的用户（如果是回复别人的回复，且不是评论作者本人，也不是自己）
+    if (reply_to_user_id && reply_to_user_id !== req.user.id && reply_to_user_id !== comment.user_id) {
+      await Notification.create({
+        user_id: reply_to_user_id,
+        type: 'reply',
+        title: '收到回复',
+        content: `回复了你的回复`,
         target_type: 'post',
         target_id: comment.post_id
       });

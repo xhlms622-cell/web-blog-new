@@ -80,19 +80,19 @@ defineEmits(['navigate', 'switchHotTab'])
 
   .aside-section {
     padding: 16px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border-color-light);
 
     .section-title {
       font-size: 14px;
-      color: #909399;
+      color: var(--text-secondary);
       margin-bottom: 12px;
 
       span {
         cursor: pointer;
-        color: #909399;
+        color: var(--text-secondary);
 
         &.active {
-          color: #303133;
+          color: var(--text-primary);
           font-weight: 500;
         }
       }
@@ -107,11 +107,11 @@ defineEmits(['navigate', 'switchHotTab'])
       .tieba-item {
         padding: 8px 0;
         font-size: 14px;
-        color: #606266;
+        color: var(--text-regular);
         cursor: pointer;
 
         &:hover {
-          color: #409eff;
+          color: var(--primary-color);
         }
       }
     }
@@ -123,11 +123,11 @@ defineEmits(['navigate', 'switchHotTab'])
         gap: 8px;
         padding: 8px 0;
         font-size: 13px;
-        color: #606266;
+        color: var(--text-regular);
         cursor: pointer;
 
         &:hover {
-          color: #409eff;
+          color: var(--primary-color);
         }
 
         .hot-rank {
@@ -135,15 +135,15 @@ defineEmits(['navigate', 'switchHotTab'])
           width: 18px;
           height: 18px;
           border-radius: 3px;
-          background: #f0f0f0;
-          color: #909399;
+          background: var(--bg-hover);
+          color: var(--text-secondary);
           font-size: 12px;
           display: flex;
           align-items: center;
           justify-content: center;
 
           &.top {
-            background: #409eff;
+            background: var(--primary-color);
             color: #fff;
           }
         }

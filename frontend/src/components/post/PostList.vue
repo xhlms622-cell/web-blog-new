@@ -65,12 +65,7 @@
 <script setup>
 import { View, ChatDotRound, Star } from '@element-plus/icons-vue'
 import LevelBadge from '@/components/LevelBadge.vue'
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
-import 'dayjs/locale/zh-cn'
-
-dayjs.extend(relativeTime)
-dayjs.locale('zh-cn')
+import { formatTime } from '@/utils/format'
 
 defineProps({
   posts: {
@@ -82,10 +77,6 @@ defineProps({
     default: false
   }
 })
-
-const formatTime = (time) => {
-  return dayjs(time).fromNow()
-}
 </script>
 
 <style lang="scss" scoped>
@@ -102,12 +93,12 @@ const formatTime = (time) => {
 
   .posts {
     .post-card {
-      background: #fff;
+      background: var(--bg-card);
       border-radius: 8px;
       padding: 16px;
       margin-bottom: 12px;
       cursor: pointer;
-      transition: box-shadow 0.3s;
+      transition: box-shadow 0.3s, background-color 0.3s;
 
       &:hover {
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -127,16 +118,16 @@ const formatTime = (time) => {
           flex-wrap: wrap;
 
           .author {
-            color: #303133;
+            color: var(--text-primary);
             font-weight: 500;
           }
 
           .tieba {
-            color: #409eff;
+            color: var(--primary-color);
           }
 
           .time {
-            color: #909399;
+            color: var(--text-secondary);
           }
         }
       }
@@ -152,7 +143,7 @@ const formatTime = (time) => {
           .post-title {
             font-size: 16px;
             font-weight: 600;
-            color: #303133;
+            color: var(--text-primary);
             margin-bottom: 8px;
 
             .post-tag {
@@ -163,7 +154,7 @@ const formatTime = (time) => {
 
           .post-content {
             font-size: 14px;
-            color: #606266;
+            color: var(--text-regular);
             line-height: 1.6;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -190,12 +181,12 @@ const formatTime = (time) => {
             width: 100px;
             height: 100px;
             border-radius: 6px;
-            background: #f5f5f5;
+            background: var(--bg-hover);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
-            color: #909399;
+            color: var(--text-secondary);
 
             @include mobile { width: 70px; height: 70px; }
           }
@@ -207,9 +198,9 @@ const formatTime = (time) => {
         gap: 20px;
         margin-top: 12px;
         padding-top: 12px;
-        border-top: 1px solid #f0f0f0;
+        border-top: 1px solid var(--border-color-light);
         font-size: 13px;
-        color: #909399;
+        color: var(--text-secondary);
 
         span {
           display: flex;

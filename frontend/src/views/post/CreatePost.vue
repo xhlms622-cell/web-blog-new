@@ -5,9 +5,16 @@
 
       <el-form ref="formRef" :model="form" :rules="rules" label-width="60px">
         <el-form-item label="贴吧" prop="tieba_id">
-          <el-select v-model="form.tieba_id" placeholder="选择贴吧" filterable>
+          <el-select
+            v-model="form.tieba_id"
+            placeholder="搜索贴吧"
+            filterable
+            remote
+            :remote-method="searchTiebas"
+            :loading="tiebaSearching"
+          >
             <el-option
-              v-for="t in myTiebas"
+              v-for="t in tiebaOptions"
               :key="t.id"
               :label="t.name"
               :value="t.id"
@@ -29,8 +36,9 @@
             v-model="form.content"
             type="textarea"
             :rows="10"
-            placeholder="请输入帖子内容"
+            placeholder="请输入帖子内容，支持 Markdown 语法（标题、列表、代码块、图片等）"
           />
+          <div class="markdown-tip">支持 Markdown 语法，发布后自动渲染</div>
         </el-form-item>
 
         <el-form-item label="图片">
@@ -76,13 +84,16 @@ import { postApi } from '@/api/post'
 import { tiebaApi } from '@/api/tieba'
 import request from '@/utils/request'
 
+let searchTimer = null
+
 const router = useRouter()
 const route = useRoute()
 
 const formRef = ref()
 const loading = ref(false)
 const uploading = ref(false)
-const myTiebas = ref([])
+const tiebaSearching = ref(false)
+const tiebaOptions = ref([])
 const uploadedImages = ref([])
 
 const form = reactive({
@@ -140,14 +151,30 @@ const handleSubmit = async () => {
   }
 }
 
+const searchTiebas = (keyword) => {
+  if (searchTimer) clearTimeout(searchTimer)
+  if (!keyword && tiebaOptions.value.length > 0) return
+
+  searchTimer = setTimeout(async () => {
+    tiebaSearching.value = true
+    try {
+      const params = { pageSize: 20 }
+      if (keyword) params.keyword = keyword
+      const res = await tiebaApi.getTiebas(params)
+      tiebaOptions.value = res.data.list
+    } finally {
+      tiebaSearching.value = false
+    }
+  }, 300)
+}
+
 onMounted(async () => {
   const tiebaId = route.params.tiebaId
   if (tiebaId) {
     form.tieba_id = parseInt(tiebaId)
   }
-
-  const res = await tiebaApi.getTiebas({ pageSize: 100 })
-  myTiebas.value = res.data.list
+  // 加载热门贴吧作为默认选项
+  searchTiebas('')
 })
 </script>
 
@@ -162,16 +189,17 @@ onMounted(async () => {
   .form-card {
     width: 800px;
     max-width: 100%;
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 8px;
     padding: 32px;
+    transition: background-color 0.3s;
 
     @include mobile { padding: 20px 16px; }
 
     h1 {
       font-size: 22px;
       font-weight: 600;
-      color: #303133;
+      color: var(--text-primary);
       margin-bottom: 24px;
     }
 
@@ -202,9 +230,9 @@ onMounted(async () => {
           top: -6px;
           right: -6px;
           font-size: 20px;
-          color: #f56c6c;
+          color: var(--danger-color);
           cursor: pointer;
-          background: #fff;
+          background: var(--bg-card);
           border-radius: 50%;
         }
       }
@@ -213,13 +241,13 @@ onMounted(async () => {
         .upload-placeholder {
           width: 100px;
           height: 100px;
-          border: 1px dashed #d9d9d9;
+          border: 1px dashed var(--border-color);
           border-radius: 6px;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          color: #909399;
+          color: var(--text-secondary);
           font-size: 12px;
           cursor: pointer;
           transition: border-color 0.3s;
@@ -227,8 +255,8 @@ onMounted(async () => {
           @include mobile { width: 70px; height: 70px; }
 
           &:hover {
-            border-color: #409eff;
-            color: #409eff;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
           }
 
           .el-icon {
@@ -239,9 +267,9 @@ onMounted(async () => {
       }
     }
 
-    .upload-tip {
+    .upload-tip, .markdown-tip {
       font-size: 12px;
-      color: #909399;
+      color: var(--text-secondary);
       margin-top: 6px;
     }
   }

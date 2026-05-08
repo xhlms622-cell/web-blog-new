@@ -13,6 +13,10 @@ export const postApi = {
     return request.get(`/posts/${id}`)
   },
 
+  updatePost(id, data) {
+    return request.put(`/posts/${id}`, data)
+  },
+
   likePost(id) {
     return request.post(`/posts/${id}/like`)
   },

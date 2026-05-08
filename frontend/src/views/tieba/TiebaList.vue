@@ -135,7 +135,7 @@ onMounted(async () => {
 
     h1 {
       font-size: 24px;
-      color: #303133;
+      color: var(--text-primary);
 
       @include mobile { font-size: 20px; }
     }
@@ -170,7 +170,7 @@ onMounted(async () => {
     .tieba-card {
       display: flex;
       gap: 16px;
-      background: #fff;
+      background: var(--bg-card);
       border-radius: 8px;
       padding: 16px;
       cursor: pointer;
@@ -201,13 +201,13 @@ onMounted(async () => {
         .tieba-name {
           font-size: 16px;
           font-weight: 600;
-          color: #303133;
+          color: var(--text-primary);
           margin-bottom: 4px;
         }
 
         .tieba-desc {
           font-size: 13px;
-          color: #909399;
+          color: var(--text-secondary);
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
@@ -218,10 +218,10 @@ onMounted(async () => {
           display: flex;
           gap: 12px;
           font-size: 12px;
-          color: #909399;
+          color: var(--text-secondary);
 
           .category-tag {
-            color: #409eff;
+            color: var(--primary-color);
           }
         }
       }

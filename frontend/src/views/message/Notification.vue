@@ -67,6 +67,7 @@ import {
   ChatDotRound, Star, UserFilled, Bell, Promotion
 } from '@element-plus/icons-vue'
 import { getNotifications, markAsRead, markAllAsRead } from '@/api/notification'
+import { formatTime } from '@/utils/format'
 import { useNotificationStore } from '@/stores/notification'
 
 const router = useRouter()
@@ -99,21 +100,6 @@ const colorMap = {
 
 const getIcon = (type) => iconMap[type] || Bell
 const getIconColor = (type) => colorMap[type] || '#909399'
-
-const formatTime = (dateStr) => {
-  const date = new Date(dateStr)
-  const now = new Date()
-  const diff = now - date
-  const minutes = Math.floor(diff / 60000)
-  const hours = Math.floor(diff / 3600000)
-  const days = Math.floor(diff / 86400000)
-
-  if (minutes < 1) return '刚刚'
-  if (minutes < 60) return `${minutes}分钟前`
-  if (hours < 24) return `${hours}小时前`
-  if (days < 30) return `${days}天前`
-  return date.toLocaleDateString()
-}
 
 const fetchList = async () => {
   loading.value = true
@@ -165,7 +151,7 @@ onMounted(() => {
 @import '@/assets/styles/main.scss';
 
 .notification-page {
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 8px;
   padding: 20px;
 
@@ -198,20 +184,20 @@ onMounted(() => {
   align-items: flex-start;
   gap: 12px;
   padding: 16px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--border-color-light);
   cursor: pointer;
   transition: background 0.2s;
   position: relative;
 
   &:hover {
-    background: #f5f7fa;
+    background: var(--bg-hover);
   }
 
   &.unread {
-    background: #ecf5ff;
+    background: color-mix(in srgb, var(--primary-color) 10%, transparent);
 
     &:hover {
-      background: #d9ecff;
+      background: color-mix(in srgb, var(--primary-color) 18%, transparent);
     }
   }
 }
@@ -221,7 +207,7 @@ onMounted(() => {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #f4f4f5;
+  background: var(--bg-hover);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -235,19 +221,19 @@ onMounted(() => {
 .notification-title {
   font-size: 14px;
   font-weight: 500;
-  color: #303133;
+  color: var(--text-primary);
   margin-bottom: 4px;
 }
 
 .notification-text {
   font-size: 13px;
-  color: #606266;
+  color: var(--text-regular);
   margin-bottom: 4px;
 }
 
 .notification-time {
   font-size: 12px;
-  color: #c0c4cc;
+  color: var(--text-placeholder);
 }
 
 .unread-dot {
@@ -258,7 +244,7 @@ onMounted(() => {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #409eff;
+  background: var(--primary-color);
 }
 
 .pagination {

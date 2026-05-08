@@ -25,7 +25,7 @@
         </div>
 
         <h1 class="post-title">{{ post.title }}</h1>
-        <div class="post-content">{{ post.content }}</div>
+        <div class="post-content markdown-body" v-html="renderedContent"></div>
 
         <div v-if="post.images?.length" class="post-images">
           <el-image
@@ -34,6 +34,7 @@
             :src="img"
             fit="cover"
             class="post-img"
+            lazy
             :preview-src-list="post.images"
             :initial-index="i"
           />
@@ -56,6 +57,12 @@
             @click="handleFavorite"
           >
             {{ post.isFavorited ? '已收藏' : '收藏' }} {{ post.favorite_count }}
+          </el-button>
+          <el-button
+            v-if="isOwner"
+            @click="openEdit"
+          >
+            编辑
           </el-button>
           <el-button
             v-if="isOwner || authStore.isAdmin"
@@ -130,6 +137,12 @@
               <el-button text size="small" @click="startReply(comment)">回复</el-button>
             </div>
           </div>
+
+          <div v-if="hasMoreComments" class="load-more">
+            <el-button :loading="loadingMoreComments" @click="loadMoreComments">
+              加载更多评论
+            </el-button>
+          </div>
         </div>
 
         <!-- 举报对话框 -->
@@ -144,6 +157,24 @@
             <el-button @click="reportVisible = false">取消</el-button>
             <el-button type="primary" :loading="reportLoading" @click="submitReport" :disabled="!reportReason.trim()">
               提交举报
+            </el-button>
+          </template>
+        </el-dialog>
+
+        <!-- 编辑对话框 -->
+        <el-dialog v-model="editVisible" title="编辑帖子" width="600px">
+          <el-form label-position="top">
+            <el-form-item label="标题">
+              <el-input v-model="editForm.title" maxlength="200" show-word-limit />
+            </el-form-item>
+            <el-form-item label="内容">
+              <el-input v-model="editForm.content" type="textarea" :rows="6" />
+            </el-form-item>
+          </el-form>
+          <template #footer>
+            <el-button @click="editVisible = false">取消</el-button>
+            <el-button type="primary" :loading="editLoading" @click="submitEdit">
+              保存
             </el-button>
           </template>
         </el-dialog>
@@ -174,16 +205,18 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
-import 'dayjs/locale/zh-cn'
+import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 import { postApi } from '@/api/post'
 import { createReport } from '@/api/report'
 import { useAuthStore } from '@/stores/auth'
 import LevelBadge from '@/components/LevelBadge.vue'
+import { formatTime } from '@/utils/format'
 
-dayjs.extend(relativeTime)
-dayjs.locale('zh-cn')
+const renderedContent = computed(() => {
+  if (!post.value?.content) return ''
+  return DOMPurify.sanitize(marked(post.value.content))
+})
 
 const route = useRoute()
 const router = useRouter()
@@ -195,19 +228,24 @@ const reportVisible = ref(false)
 const reportReason = ref('')
 const reportLoading = ref(false)
 
+const editVisible = ref(false)
+const editLoading = ref(false)
+const editForm = ref({ title: '', content: '' })
+
 const loading = ref(true)
 const post = ref(null)
 const comments = ref([])
 const commentContent = ref('')
 const commentLoading = ref(false)
+const commentPage = ref(1)
+const commentTotal = ref(0)
+const loadingMoreComments = ref(false)
 
 const replyVisible = ref(false)
 const replyContent = ref('')
 const replyLoading = ref(false)
 const replyTarget = ref(null)
 const replyPlaceholder = ref('')
-
-const formatTime = (time) => dayjs(time).fromNow()
 
 const loadPost = async () => {
   loading.value = true
@@ -220,9 +258,33 @@ const loadPost = async () => {
   }
 }
 
-const loadComments = async () => {
-  const res = await postApi.getComments(route.params.id)
-  comments.value = res.data.list
+const loadComments = async (reset = true) => {
+  if (reset) {
+    commentPage.value = 1
+    comments.value = []
+  }
+  const res = await postApi.getComments(route.params.id, {
+    page: commentPage.value,
+    pageSize: 20
+  })
+  if (reset) {
+    comments.value = res.data.list
+  } else {
+    comments.value.push(...res.data.list)
+  }
+  commentTotal.value = res.data.total
+}
+
+const hasMoreComments = computed(() => comments.value.length < commentTotal.value)
+
+const loadMoreComments = async () => {
+  loadingMoreComments.value = true
+  try {
+    commentPage.value++
+    await loadComments(false)
+  } finally {
+    loadingMoreComments.value = false
+  }
 }
 
 const handleLike = async () => {
@@ -274,6 +336,33 @@ const handleDelete = async () => {
     router.push('/')
   } catch {
     // cancelled
+  }
+}
+
+const openEdit = () => {
+  editForm.value = {
+    title: post.value.title,
+    content: post.value.content
+  }
+  editVisible.value = true
+}
+
+const submitEdit = async () => {
+  if (!editForm.value.title.trim() || !editForm.value.content.trim()) {
+    ElMessage.warning('标题和内容不能为空')
+    return
+  }
+  editLoading.value = true
+  try {
+    const res = await postApi.updatePost(route.params.id, editForm.value)
+    post.value.title = res.data.title
+    post.value.content = res.data.content
+    editVisible.value = false
+    ElMessage.success('帖子已更新')
+  } catch {
+    // handled by interceptor
+  } finally {
+    editLoading.value = false
   }
 }
 
@@ -341,9 +430,10 @@ watch(() => route.params.id, (newId) => {
   }
 
   .post-card {
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 8px;
     padding: 24px;
+    transition: background-color 0.3s;
     margin-bottom: 16px;
 
     @include mobile { padding: 16px; }
@@ -373,12 +463,12 @@ watch(() => route.params.id, (newId) => {
           .nickname {
             font-size: 15px;
             font-weight: 500;
-            color: #303133;
+            color: var(--text-primary);
           }
 
           .level {
             font-size: 12px;
-            color: #409eff;
+            color: var(--primary-color);
           }
         }
       }
@@ -390,8 +480,8 @@ watch(() => route.params.id, (newId) => {
 
         .tieba-tag {
           padding: 2px 10px;
-          background: #ecf5ff;
-          color: #409eff;
+          background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+          color: var(--primary-color);
           border-radius: 4px;
           font-size: 13px;
           text-decoration: none;
@@ -399,7 +489,7 @@ watch(() => route.params.id, (newId) => {
 
         .time {
           font-size: 13px;
-          color: #909399;
+          color: var(--text-secondary);
         }
       }
     }
@@ -407,7 +497,7 @@ watch(() => route.params.id, (newId) => {
     .post-title {
       font-size: 22px;
       font-weight: 600;
-      color: #303133;
+      color: var(--text-primary);
       margin-bottom: 16px;
 
       @include mobile { font-size: 18px; }
@@ -415,10 +505,80 @@ watch(() => route.params.id, (newId) => {
 
     .post-content {
       font-size: 15px;
-      color: #303133;
+      color: var(--text-primary);
       line-height: 1.8;
-      white-space: pre-wrap;
       word-break: break-word;
+
+      &.markdown-body {
+        :deep(h1), :deep(h2), :deep(h3), :deep(h4) {
+          margin: 16px 0 8px;
+          font-weight: 600;
+        }
+        :deep(h1) { font-size: 1.5em; }
+        :deep(h2) { font-size: 1.3em; }
+        :deep(h3) { font-size: 1.1em; }
+
+        :deep(p) { margin: 8px 0; }
+
+        :deep(code) {
+          background: var(--bg-hover);
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-size: 0.9em;
+        }
+
+        :deep(pre) {
+          background: var(--bg-hover);
+          padding: 12px;
+          border-radius: 8px;
+          overflow-x: auto;
+          margin: 12px 0;
+
+          code {
+            background: none;
+            padding: 0;
+          }
+        }
+
+        :deep(blockquote) {
+          border-left: 4px solid var(--border-color);
+          padding: 4px 16px;
+          margin: 12px 0;
+          color: var(--text-secondary);
+        }
+
+        :deep(ul), :deep(ol) {
+          padding-left: 24px;
+          margin: 8px 0;
+        }
+
+        :deep(img) {
+          max-width: 100%;
+          border-radius: 8px;
+        }
+
+        :deep(a) {
+          color: var(--primary-color);
+          text-decoration: none;
+          &:hover { text-decoration: underline; }
+        }
+
+        :deep(table) {
+          border-collapse: collapse;
+          margin: 12px 0;
+          th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+          }
+          th { background: var(--bg-hover); }
+        }
+
+        :deep(hr) {
+          border: none;
+          border-top: 1px solid var(--border-color-light);
+          margin: 16px 0;
+        }
+      }
     }
 
     .post-images {
@@ -440,9 +600,9 @@ watch(() => route.params.id, (newId) => {
     .post-stats {
       margin-top: 20px;
       padding-top: 16px;
-      border-top: 1px solid #f0f0f0;
+      border-top: 1px solid var(--border-color-light);
       font-size: 13px;
-      color: #909399;
+      color: var(--text-secondary);
       display: flex;
       gap: 16px;
     }
@@ -461,7 +621,7 @@ watch(() => route.params.id, (newId) => {
   }
 
   .comments-section {
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 8px;
     padding: 24px;
 
@@ -469,7 +629,7 @@ watch(() => route.params.id, (newId) => {
 
     h3 {
       font-size: 16px;
-      color: #303133;
+      color: var(--text-primary);
       margin-bottom: 20px;
     }
 
@@ -493,9 +653,14 @@ watch(() => route.params.id, (newId) => {
         padding: 20px;
       }
 
+      .load-more {
+        text-align: center;
+        padding: 16px 0;
+      }
+
       .comment-item {
         padding: 16px 0;
-        border-bottom: 1px solid #f5f5f5;
+        border-bottom: 1px solid var(--border-color-light);
 
         .comment-header {
           display: flex;
@@ -512,22 +677,22 @@ watch(() => route.params.id, (newId) => {
 
             .author-name {
               font-weight: 500;
-              color: #303133;
+              color: var(--text-primary);
             }
 
             .floor {
-              color: #909399;
+              color: var(--text-secondary);
             }
 
             .time {
-              color: #c0c4cc;
+              color: var(--text-placeholder);
             }
           }
         }
 
         .comment-body {
           font-size: 14px;
-          color: #303133;
+          color: var(--text-primary);
           line-height: 1.6;
           margin-bottom: 8px;
           padding-left: 42px;
@@ -539,23 +704,23 @@ watch(() => route.params.id, (newId) => {
           margin-left: 42px;
           margin-bottom: 8px;
           padding: 8px 12px;
-          background: #f5f7fa;
+          background: var(--bg-hover);
           border-radius: 4px;
 
           @include mobile { margin-left: 0; }
 
           .reply-item {
             font-size: 13px;
-            color: #606266;
+            color: var(--text-regular);
             line-height: 1.8;
 
             .reply-author {
-              color: #409eff;
+              color: var(--primary-color);
               font-weight: 500;
             }
 
             .reply-to {
-              color: #409eff;
+              color: var(--primary-color);
             }
           }
         }

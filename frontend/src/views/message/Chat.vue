@@ -79,11 +79,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useChatStore } from '@/stores/chat'
 import { ArrowLeft } from '@element-plus/icons-vue'
+import { formatTime } from '@/utils/format'
 
 const route = useRoute()
 const router = useRouter()
@@ -95,25 +96,13 @@ const sending = ref(false)
 const messageListRef = ref(null)
 const isMobile = ref(window.innerWidth < 768)
 
-window.addEventListener('resize', () => {
+const onResize = () => {
   isMobile.value = window.innerWidth < 768
-})
-
-const formatTime = (dateStr) => {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  const now = new Date()
-  const diff = now - date
-  const minutes = Math.floor(diff / 60000)
-  const hours = Math.floor(diff / 3600000)
-  const days = Math.floor(diff / 86400000)
-
-  if (minutes < 1) return '刚刚'
-  if (minutes < 60) return `${minutes}分钟前`
-  if (hours < 24) return `${hours}小时前`
-  if (days < 7) return `${days}天前`
-  return date.toLocaleDateString()
 }
+window.addEventListener('resize', onResize)
+onUnmounted(() => {
+  window.removeEventListener('resize', onResize)
+})
 
 const scrollToBottom = () => {
   nextTick(() => {
@@ -171,14 +160,14 @@ onMounted(async () => {
 .chat-page {
   display: flex;
   height: calc(100vh - 120px);
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 8px;
   overflow: hidden;
 }
 
 .conversation-list {
   width: 300px;
-  border-right: 1px solid #e4e7ed;
+  border-right: 1px solid var(--border-color-light);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -192,7 +181,7 @@ onMounted(async () => {
 
   .list-header {
     padding: 16px;
-    border-bottom: 1px solid #e4e7ed;
+    border-bottom: 1px solid var(--border-color-light);
 
     h3 {
       margin: 0;
@@ -215,11 +204,11 @@ onMounted(async () => {
   transition: background 0.2s;
 
   &:hover {
-    background: #f5f7fa;
+    background: var(--bg-hover);
   }
 
   &.active {
-    background: #ecf5ff;
+    background: color-mix(in srgb, var(--primary-color) 10%, transparent);
   }
 }
 
@@ -238,12 +227,12 @@ onMounted(async () => {
 .conv-name {
   font-size: 14px;
   font-weight: 500;
-  color: #303133;
+  color: var(--text-primary);
 }
 
 .conv-time {
   font-size: 12px;
-  color: #c0c4cc;
+  color: var(--text-placeholder);
   flex-shrink: 0;
 }
 
@@ -255,7 +244,7 @@ onMounted(async () => {
 
 .conv-msg {
   font-size: 13px;
-  color: #909399;
+  color: var(--text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -275,7 +264,7 @@ onMounted(async () => {
 
 .message-header {
   padding: 16px;
-  border-bottom: 1px solid #e4e7ed;
+  border-bottom: 1px solid var(--border-color-light);
   font-size: 16px;
   font-weight: 500;
   display: flex;
@@ -287,7 +276,7 @@ onMounted(async () => {
     cursor: pointer;
     font-size: 20px;
 
-    &:hover { color: #409eff; }
+    &:hover { color: var(--primary-color); }
 
     @include mobile { display: block; }
   }
@@ -314,7 +303,7 @@ onMounted(async () => {
     }
 
     .message-content {
-      background: #409eff;
+      background: var(--primary-color);
       color: #fff;
     }
   }
@@ -329,7 +318,7 @@ onMounted(async () => {
 }
 
 .message-content {
-  background: #f4f4f5;
+  background: var(--bg-hover);
   padding: 10px 14px;
   border-radius: 8px;
   font-size: 14px;
@@ -339,7 +328,7 @@ onMounted(async () => {
 
 .message-time {
   font-size: 12px;
-  color: #c0c4cc;
+  color: var(--text-placeholder);
   margin-top: 4px;
 }
 
@@ -347,7 +336,7 @@ onMounted(async () => {
   display: flex;
   gap: 10px;
   padding: 16px;
-  border-top: 1px solid #e4e7ed;
+  border-top: 1px solid var(--border-color-light);
 
   @include mobile { padding: 12px; }
 }

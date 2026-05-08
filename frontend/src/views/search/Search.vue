@@ -155,16 +155,16 @@ watch(() => route.query.keyword, (newKw) => {
   .section-title {
     font-size: 16px;
     font-weight: 600;
-    color: #303133;
+    color: var(--text-primary);
     margin: 16px 0 12px;
     padding-bottom: 8px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--border-color-light);
   }
 
   .empty {
     padding: 20px;
     text-align: center;
-    color: #909399;
+    color: var(--text-secondary);
     font-size: 14px;
   }
 
@@ -174,7 +174,7 @@ watch(() => route.query.keyword, (newKw) => {
       align-items: center;
       gap: 12px;
       padding: 12px;
-      background: #fff;
+      background: var(--bg-card);
       border-radius: 8px;
       margin-bottom: 8px;
       cursor: pointer;
@@ -202,12 +202,12 @@ watch(() => route.query.keyword, (newKw) => {
         .tieba-name {
           font-size: 15px;
           font-weight: 500;
-          color: #303133;
+          color: var(--text-primary);
         }
 
         .tieba-meta {
           font-size: 13px;
-          color: #909399;
+          color: var(--text-secondary);
           margin-top: 2px;
         }
       }
@@ -220,7 +220,7 @@ watch(() => route.query.keyword, (newKw) => {
       align-items: center;
       gap: 12px;
       padding: 12px;
-      background: #fff;
+      background: var(--bg-card);
       border-radius: 8px;
       margin-bottom: 8px;
       cursor: pointer;
@@ -234,12 +234,12 @@ watch(() => route.query.keyword, (newKw) => {
         .user-name {
           font-size: 15px;
           font-weight: 500;
-          color: #303133;
+          color: var(--text-primary);
         }
 
         .user-meta {
           font-size: 13px;
-          color: #909399;
+          color: var(--text-secondary);
           margin-top: 2px;
         }
       }

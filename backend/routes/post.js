@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createPostValidator } = require('../validators/postValidator');
+const { createPostValidator, updatePostValidator } = require('../validators/postValidator');
 const { createCommentValidator, createReplyValidator } = require('../validators/commentValidator');
 const validate = require('../middlewares/validator');
 const { auth, optionalAuth } = require('../middlewares/auth');
@@ -13,6 +13,7 @@ router.post('/', auth, createPostValidator, validate, postController.create);
 router.get('/my', auth, postController.myPosts);
 router.get('/my/favorites', auth, postController.myFavorites);
 router.get('/:id', optionalAuth, postController.getById);
+router.put('/:id', auth, updatePostValidator, validate, postController.update);
 router.delete('/:id', auth, postController.remove);
 router.post('/:id/like', auth, postController.like);
 router.post('/:id/favorite', auth, postController.favorite);

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { authApi } from '@/api/auth'
+import { disconnectSocket } from '@/utils/socket'
 import router from '@/router'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -32,6 +33,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function logout() {
+    disconnectSocket()
     user.value = null
     token.value = null
     refreshToken.value = null

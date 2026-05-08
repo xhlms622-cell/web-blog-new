@@ -165,14 +165,7 @@ import { levelApi } from '@/api/level'
 import { useAuthStore } from '@/stores/auth'
 import PostList from '@/components/post/PostList.vue'
 import LevelBadge from '@/components/LevelBadge.vue'
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
-import 'dayjs/locale/zh-cn'
-
-dayjs.extend(relativeTime)
-dayjs.locale('zh-cn')
-
-const formatTime = (time) => dayjs(time).fromNow()
+import { formatTime } from '@/utils/format'
 
 const route = useRoute()
 const authStore = useAuthStore()
@@ -303,10 +296,10 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
 
 .profile-page {
   .loading { padding: 40px; }
-  .empty { padding: 40px; text-align: center; color: #909399; }
+  .empty { padding: 40px; text-align: center; color: var(--text-secondary); }
 
   .profile-header {
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 8px;
     padding: 24px;
     display: flex;
@@ -331,21 +324,21 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
 
         @include mobile { justify-content: center; }
 
-        h1 { font-size: 22px; color: #303133; margin: 0; @include mobile { font-size: 20px; } }
+        h1 { font-size: 22px; color: var(--text-primary); margin: 0; @include mobile { font-size: 20px; } }
       }
 
-      .signature { font-size: 14px; color: #909399; margin: 8px 0; }
+      .signature { font-size: 14px; color: var(--text-secondary); margin: 8px 0; }
       .stats {
         display: flex;
         gap: 20px;
         font-size: 14px;
-        color: #606266;
+        color: var(--text-regular);
 
         @include mobile { justify-content: center; }
 
         .stat-click {
           cursor: pointer;
-          &:hover { color: #409eff; }
+          &:hover { color: var(--primary-color); }
         }
       }
     }
@@ -359,7 +352,7 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
   }
 
   .level-card {
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 16px;
@@ -382,7 +375,7 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
         .level-name {
           font-size: 16px;
           font-weight: 500;
-          color: #303133;
+          color: var(--text-primary);
         }
       }
     }
@@ -394,7 +387,7 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
         display: flex;
         justify-content: space-between;
         font-size: 13px;
-        color: #606266;
+        color: var(--text-regular);
         margin-bottom: 6px;
       }
 
@@ -402,7 +395,7 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
         display: flex;
         justify-content: space-between;
         font-size: 12px;
-        color: #909399;
+        color: var(--text-secondary);
         margin-top: 4px;
       }
     }
@@ -411,7 +404,7 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
       display: flex;
       gap: 24px;
       padding-top: 12px;
-      border-top: 1px solid #f0f0f0;
+      border-top: 1px solid var(--border-color-light);
       flex-wrap: wrap;
 
       @include mobile { gap: 16px; justify-content: center; }
@@ -426,12 +419,12 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
         .stat-value {
           font-size: 16px;
           font-weight: 600;
-          color: #303133;
+          color: var(--text-primary);
         }
 
         .stat-label {
           font-size: 12px;
-          color: #909399;
+          color: var(--text-secondary);
           margin-top: 2px;
         }
       }
@@ -444,7 +437,7 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
       justify-content: space-between;
       align-items: center;
       padding: 12px 0;
-      border-bottom: 1px solid #f5f5f5;
+      border-bottom: 1px solid var(--border-color-light);
 
       .exp-log-info {
         display: flex;
@@ -453,7 +446,7 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
 
         .exp-log-desc {
           font-size: 14px;
-          color: #303133;
+          color: var(--text-primary);
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
@@ -461,7 +454,7 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
 
         .exp-log-time {
           font-size: 12px;
-          color: #c0c4cc;
+          color: var(--text-placeholder);
           margin-top: 2px;
         }
       }
@@ -471,8 +464,8 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
         font-weight: 500;
         flex-shrink: 0;
 
-        &.positive { color: #67c23a; }
-        &.negative { color: #f56c6c; }
+        &.positive { color: var(--success-color); }
+        &.negative { color: var(--danger-color); }
       }
     }
 
@@ -486,7 +479,7 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
   .follow-list {
     min-height: 100px;
 
-    .empty { text-align: center; color: #909399; padding: 40px 0; }
+    .empty { text-align: center; color: var(--text-secondary); padding: 40px 0; }
 
     .follow-item {
       display: flex;
@@ -494,17 +487,17 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
       gap: 12px;
       padding: 10px 0;
       cursor: pointer;
-      border-bottom: 1px solid #f5f5f5;
+      border-bottom: 1px solid var(--border-color-light);
 
-      &:hover { background: #f5f7fa; }
+      &:hover { background: var(--bg-hover); }
       &:last-child { border-bottom: none; }
 
       .follow-info {
         flex: 1;
         min-width: 0;
 
-        .follow-name { font-size: 14px; font-weight: 500; color: #303133; }
-        .follow-sig { font-size: 12px; color: #909399; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .follow-name { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+        .follow-sig { font-size: 12px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       }
     }
   }
@@ -523,7 +516,7 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
   .rules-content {
     h4 {
       font-size: 15px;
-      color: #303133;
+      color: var(--text-primary);
       margin: 16px 0 10px;
       &:first-child { margin-top: 0; }
     }
@@ -531,9 +524,9 @@ watch(() => route.params.id, (id) => { if (id) loadProfile() })
     .rules-note {
       margin-top: 10px;
       font-size: 13px;
-      color: #606266;
+      color: var(--text-regular);
       padding: 8px 12px;
-      background: #fdf6ec;
+      background: color-mix(in srgb, var(--warning-color) 12%, transparent);
       border-radius: 4px;
 
       p { margin: 0; }
